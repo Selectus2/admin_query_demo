@@ -1,6 +1,11 @@
 Rails.application.routes.draw do
-  get "admin/dashboard"
-  post "admin/query"
+  root "admin#dashboard"
+
+  get "admin/dashboard", to: "admin#dashboard"
+
+  # Handle query as both GET and POST
+  get "admin/query", to: "admin#query"
+  post "admin/query", to: "admin#query"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

@@ -44,7 +44,7 @@ User.find_each do |user|
       user: user,
       total: rand(20.0..300.0).round(2),
       status: [ 'pending', 'completed', 'cancelled', 'refunded' ].sample,
-      order_date: rand(60.days.ago..Date.current)
+      order_date: rand((Date.current - 60.days)..Date.current)
     )
   end
 end
