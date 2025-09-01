@@ -1,0 +1,156 @@
+<% content_for :title, "Admin Dashboard" %>
+
+<div class="row mb-4">
+  <div class="col-12">
+    <h1>Admin Dashboard</h1>
+    <p class="text-muted">Overview of your system metrics</p>
+  </div>
+</div>
+
+<div class="row mb-4">
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <h3 class="text-primary"><%= @stats[:total_users] %></h3>
+        <p class="card-text">Total Users</p>
+        <small class="text-muted"><%= @stats[:active_users] %> active</small>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <h3 class="text-success"><%= @stats[:total_orders] %></h3>
+        <p class="card-text">Total Orders</p>
+        <small class="text-muted"><%= @stats[:pending_orders] %> pending</small>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <h3 class="text-info">$<%= number_with_precision(@stats[:total_revenue], precision: 2) %></h3>
+        <p class="card-text">Total Revenue</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <h3 class="text-warning"><%= @stats[:low_stock_products] %></h3>
+        <p class="card-text">Low Stock Products</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h5>Recent Orders</h5>
+      </div>
+      <div class="card-body">
+        <% if @recent_orders.any? %>
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Customer</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @recent_orders.each do |order| %>
+                  <tr>
+                    <td><%= order.user.name %></td>
+                    <td>$<%= order.total %></td>
+                    <td>
+                      <span class="badge bg-<%= order.status == 'completed' ? 'success' : 'warning' %>">
+                        <%= order.status.capitalize %>
+                      </span>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p class="text-muted">No recent orders</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h5>Recent Users</h5>
+      </div>
+      <div class="card-body">
+        <% if @recent_users.any? %>
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @recent_users.each do |user| %>
+                  <tr>
+                    <td><%= user.name %></td>
+                    <td><%= user.email %></td>
+                    <td>
+                      <span class="badge bg-<%= user.status == 'active' ? 'success' : 'secondary' %>">
+                        <%= user.status.capitalize %>
+                      </span>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p class="text-muted">No recent users</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h5>Try Natural Language Queries</h5>
+      </div>
+      <div class="card-body">
+        <p>Ask questions about your data in plain English:</p>
+        <div class="row">
+          <div class="col-md-6">
+            <ul class="list-unstyled">
+              <li><strong>Users:</strong> "Show me all active users"</li>
+              <li><strong>Orders:</strong> "How many pending orders do we have?"</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <ul class="list-unstyled">
+              <li><strong>Products:</strong> "Which products are low on stock?"</li>
+              <li><strong>Analytics:</strong> "What's our total revenue this month?"</li>
+            </ul>
+          </div>
+        </div>
+        <div class="text-center">
+          <%= link_to "Try Query Assistant", admin_query_path, class: "btn btn-primary" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

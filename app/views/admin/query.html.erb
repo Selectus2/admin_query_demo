@@ -1,0 +1,133 @@
+<% content_for :title, "Query Assistant" %>
+
+<div class="row">
+  <div class="col-12">
+    <h1>Natural Language Query Assistant</h1>
+    <p class="text-muted">Ask questions about your data in plain English</p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h5>Ask Your Question</h5>
+      </div>
+      <div class="card-body">
+        <%= form_with url: admin_query_path, method: :post, local: true, class: "mb-4" do |form| %>
+          <div class="mb-3">
+            <%= form.text_area :query, 
+                placeholder: "e.g., 'Show me all active users from last month' or 'How many pending orders do we have?'",
+                class: "form-control",
+                rows: 3,
+                value: @query_text %>
+          </div>
+          <%= form.submit "Ask Question", class: "btn btn-primary" %>
+        <% end %>
+        
+        <% if @result %>
+          <div class="mt-4">
+            <% if @result[:success] %>
+              <div class="alert alert-success">
+                <strong>Result:</strong> <%= @result[:summary] %>
+              </div>
+              
+              <% if @result[:data] %>
+                <div class="mt-3">
+                  <h6>Data Results:</h6>
+                  <div class="bg-light p-3 rounded">
+                    <% if @result[:data].is_a?(Array) %>
+                      <% if @result[:data].first.is_a?(Hash) %>
+                        <div class="table-responsive">
+                          <table class="table table-sm">
+                            <thead>
+                              <tr>
+                                <% @result[:data].first.keys.each do |key| %>
+                                  <th><%= key.to_s.humanize %></th>
+                                <% end %>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <% @result[:data].each do |row| %>
+                                <tr>
+                                  <% row.values.each do |value| %>
+                                    <td><%= value %></td>
+                                  <% end %>
+                                </tr>
+                              <% end %>
+                            </tbody>
+                          </table>
+                        </div>
+                      <% else %>
+                        <pre><%= JSON.pretty_generate(@result[:data]) %></pre>
+                      <% end %>
+                    <% elsif @result[:data].is_a?(Hash) %>
+                      <% @result[:data].each do |key, value| %>
+                        <div class="row mb-2">
+                          <div class="col-sm-4"><strong><%= key.to_s.humanize %>:</strong></div>
+                          <div class="col-sm-8"><%= value %></div>
+                        </div>
+                      <% end %>
+                    <% else %>
+                      <p><%= @result[:data] %></p>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+              
+              <% if @result[:sql_generated] %>
+                <div class="mt-3">
+                  <h6>SQL Info:</h6>
+                  <code class="small"><%= @result[:sql_generated] %></code>
+                </div>
+              <% end %>
+            <% else %>
+              <div class="alert alert-danger">
+                <strong>Error:</strong> <%= @result[:error] %>
+                <% if @result[:suggestion] %>
+                  <br><small><%= @result[:suggestion] %></small>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h6>Example Queries</h6>
+      </div>
+      <div class="card-body">
+        <h6>Users</h6>
+        <ul class="list-unstyled small">
+          <li>• "Show me all active users"</li>
+          <li>• "How many users signed up recently?"</li>
+          <li>• "List inactive users"</li>
+        </ul>
+        
+        <h6>Orders</h6>
+        <ul class="list-unstyled small">
+          <li>• "How many pending orders are there?"</li>
+          <li>• "Show completed orders from this month"</li>
+          <li>• "What's our total revenue?"</li>
+        </ul>
+        
+        <h6>Products</h6>
+        <ul class="list-unstyled small">
+          <li>• "Which products are low on stock?"</li>
+          <li>• "Show out of stock products"</li>
+          <li>• "List all products"</li>
+        </ul>
+        
+        <h6>Analytics</h6>
+        <ul class="list-unstyled small">
+          <li>• "Give me a system overview"</li>
+          <li>• "Show me key metrics"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
